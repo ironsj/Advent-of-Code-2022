@@ -13,7 +13,7 @@ function findFour(input: string) {
         for (let j = i; j < i + 14; j++) {
             uniqueSet.add(input[j]);
         }
-        if (uniqueSet.size == 14) {
+        if (uniqueSet.size === 14) {
             index = i + 14;
             break;
         }
@@ -22,6 +22,16 @@ function findFour(input: string) {
     return index;
 }
 
+const betterSolution = (input: string, length: number) => {
+    return input.split('').findIndex((_, index) => {
+        const fourteenChars = input.slice(index, index + length);
+        return fourteenChars.length === new Set(fourteenChars).size;
+    })
+}
+
 const input: string = syncReadFile('../input.txt');
 let index: number = findFour(input);
 console.log(index);
+
+let index2: number = betterSolution(input, 14) + 14;
+console.log(index2);
