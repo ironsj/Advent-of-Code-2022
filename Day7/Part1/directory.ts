@@ -1,6 +1,5 @@
 import { readFileSync, promises as fsPromises } from 'fs';
 import { join } from 'path';
-import { stringify } from 'querystring';
 
 function syncReadFile(filename: string) {
     const result = readFileSync(join(__dirname, filename), 'utf-8');
