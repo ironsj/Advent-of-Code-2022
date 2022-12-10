@@ -1,5 +1,4 @@
 import { readFileSync, promises as fsPromises } from 'fs';
-import { maxHeaderSize } from 'http';
 import { join } from 'path';
 
 function syncReadFile(filename: string) {
