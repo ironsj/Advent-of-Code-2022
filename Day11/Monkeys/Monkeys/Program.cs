@@ -1,7 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Diagnostics;
-
-namespace Monkeys
+﻿namespace Monkeys
 {
     class MonkeyProgram
     {
@@ -17,7 +14,7 @@ namespace Monkeys
         public static int SolvePart1(string[] input)
         {
 
-            foreach(string s in input)
+            foreach (string s in input)
             {
                 string[] lines = s.Split("\n");
                 int id = int.Parse(lines[0].Split("Monkey ")[1][..1]);
@@ -30,9 +27,9 @@ namespace Monkeys
                 );
             }
 
-            for(int i = 0; i < 20; i++)
+            for (int i = 0; i < 20; i++)
             {
-                for(int j = 0; j < monkeys.Count; j++)
+                for (int j = 0; j < monkeys.Count; j++)
                 {
                     monkeys[j].InspectItem();
                 }
@@ -52,7 +49,7 @@ namespace Monkeys
             public string Operation { get; set; }
             public int DivisibleBy { get; set; }
             public int ThrowToTrue { get; set; }
-            public int ThrowToFalse { get; set;}
+            public int ThrowToFalse { get; set; }
             public int NumInspections { get; set; } = 0;
 
             public Monkey(List<int> items, string operation, int divisible, int throwToTrue, int throwToFalse)
@@ -64,7 +61,7 @@ namespace Monkeys
                 items.ForEach(item => Items.Enqueue(item));
             }
 
-            public  void InspectItem()
+            public void InspectItem()
             {
                 // inspect each item
                 while (Items.Count > 0)
@@ -99,7 +96,7 @@ namespace Monkeys
         }
     }
 
-    
+
 }
 
 
