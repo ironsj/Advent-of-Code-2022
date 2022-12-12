@@ -108,8 +108,8 @@
              * 5: 0, 1, 2, 3, 4, 0, 1, ... , 3, 4, 0 <--- 105th (105 % 5 = 0)
              * 7: 0, 1, 2, 3, 4, 5, 6, ... , 5, 6, 0 <--- 105th (105 % 7 = 0)
              * 
-             * 150 follows this same process
-             * 150: 0, 1, 2, 3, 4, 5, ... , 103, 104, 0 <--- 105th (105 % 105 = 0)
+             * 105 follows this same process
+             * 105: 0, 1, 2, 3, 4, 5, ... , 103, 104, 0 <--- 105th (105 % 105 = 0)
              * 
              * Therefore by doing 185 % 105, we map each number between 0 and 104.
              * (185 % 105) % 3 will then map each number between 0 and 2
