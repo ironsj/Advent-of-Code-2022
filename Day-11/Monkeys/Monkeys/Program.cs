@@ -75,6 +75,9 @@
              * 783 % (9 * 7) = 27
              * 27 % 9 = 0
              * 27 % 7 = 6
+             * 
+             * Thus, we are keeping the worrying levels low without affecting the divisibility check
+             * Without using this modulo, you would need a super computer!
              */
             long modulo = monkeys.Values.Select(m => m.DivisibleBy).Aggregate((x, y) => x * y);
             for (int i = 0; i < 10000; i++)
