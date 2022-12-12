@@ -69,7 +69,7 @@
              * We need to make our worry level smaller without affecting its divisibility
              * We also need to make this work for each monkey
              * By multiplying the divisor for each monkey together, we can modulo each new worry level by this
-             * Andd know it is still going to end up the same when we modulo by the divisor for a specfic monkey
+             * And know it is still going to end up the same when we modulo by the divisor for a specfic monkey
              * Or, we need an X such that when we modulo our worry level by it, the worry level will mantain the same properties
              * 
              * 
