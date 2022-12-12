@@ -114,9 +114,9 @@
              * Therefore by doing 185 % 105, we map each number between 0 and 104.
              * (185 % 105) % 3 will then map each number between 0 and 2
              * This can be seen below:
-             * 185: 0, 1, 2, 3, 4, 5, ... , 103, 104, 0, 1, 2, ... , 82, 83, 84 <--- 185th
+             * 185: 0, 1, 2, 3, 4, 5, ... , 103, 104, 0, 1, 2, ... , 78, 79, 80 <--- 185th
              * Then,
-             * 3:   0, 1, 2, 0, 1, 2, ... ,   1,   2, 0, 1, 2, ... ,  1,  2,  0 <--- 185th
+             * 3:   0, 1, 2, 0, 1, 2, ... ,   1,   2, 0, 1, 2, ... ,  0,  1,  2 <--- 185th
              * If we were to have just done 185 % 3, it would look exactly the same as above!
              * 
              * The same would hold true for both 7 and 5. 
