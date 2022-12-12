@@ -63,10 +63,15 @@
              * Since a mod n∈[0,n−1], the second mod in (a mod kn) mod n will have no effect
              * 
              * Now that we don't divide by 3 and are multiplying and adding, the worry levels for each item will grow large
-             * However, since the only thing that matters is that our worry level is divisible for a monkey we just need to keep the level low enough to compute
+             * However, the only thing that matters is whether or not the worry level is divisible for a monkey 
+             * We just need to keep the level low enough to compute
              * 
-             * A number that is divisible by x * y will also be divisble by x and y separately
-             * Thus, it would make sense that (worryLevel % (x * y)) % x ≡ worryLevel % x
+             * We need to make our worry level smaller without affecting its divisibility
+             * We also need to make this work for each monkey
+             * By multiplying the divisor for each monkey together, we can modulo each new worry level by this
+             * Andd know it is still going to end up the same when we modulo by the divisor for a specfic monkey
+             * Or, we need an X such that when we modulo our worry level by it, the worry level will mantain the same properties
+             * 
              * 
              * For example:
              * 783 % 9 = 0
@@ -75,6 +80,51 @@
              * 783 % (9 * 7) = 27
              * 27 % 9 = 0
              * 27 % 7 = 6
+             * 
+             * OR
+             * 
+             * Let's say we have 3 monkeys
+             * monkey 1 divides by 7
+             * monkey 2 divides by 5
+             * monkey 3 divides by 3
+             * 
+             * Let's say our worry level is 185.
+             * 5 divides 185 but 3 and 7 do not
+             * 
+             * If we choose our X to be 85 then we have 185 % 85 = 15.
+             * 7 does not divide 15 but 3 and 5 do. 
+             * This is a problem since it has changed the properties of our worry level. Now 3 divides it!
+             * 
+             * Now let's try X as 105 or 185 % 105 = 80.
+             * 5 divides 80, but 3 and 7 do not
+             * This matches our original worry level of 180.
+             * The modulo is found by multiplying together 3, 7 and 5. 3 * 7 * 5 = 105.
+             * Therefore, we have an X that is sure to be divisible by all monkeys 
+             * Finding the lowest common multiple will give the ideal answer
+             * The LCM is the first number that each number divides.
+             * 
+             * Therefore, each worry level cycles all the way up to 105 until they finally sync up
+             * 3: 0, 1, 2, 0, 1, 2, 0, ... , 1, 2, 0 <--- 105th (105 % 3 = 0)
+             * 5: 0, 1, 2, 3, 4, 0, 1, ... , 3, 4, 0 <--- 105th (105 % 5 = 0)
+             * 7: 0, 1, 2, 3, 4, 5, 6, ... , 5, 6, 0 <--- 105th (105 % 7 = 0)
+             * 
+             * 150 follows this same process
+             * 150: 0, 1, 2, 3, 4, 5, ... , 103, 104, 0 <--- 105th (105 % 105 = 0)
+             * 
+             * Therefore by doing 185 % 105, we map each number between 0 and 104.
+             * (185 % 105) % 3 will then map each number between 0 and 2
+             * This can be seen below:
+             * 185: 0, 1, 2, 3, 4, 5, ... , 103, 104, 0, 1, 2, ... , 82, 83, 84 <--- 185th
+             * Then,
+             * 3:   0, 1, 2, 0, 1, 2, ... ,   1,   2, 0, 1, 2, ... ,  1,  2,  0 <--- 185th
+             * If we were to have just done 185 % 3, it would look exactly the same as above!
+             * 
+             * The same would hold true for both 7 and 5. 
+             * What is important is that 7, 5, 3, and 105 all are repeating sequences that start over every 105.
+             * 185 % 105 means we map everything from 0 to 104. Within this repeating pattern we have:
+             * (185 % 105) % 3 ≡ 185 % 3
+             * (185 % 105) % 5 ≡ 185 % 5
+             * (185 % 105) % 7 ≡ 185 % 7
              * 
              * Thus, we are keeping the worrying levels low without affecting the divisibility check
              * Without using this modulo, you would need a super computer!
