@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace Monkeys
+﻿namespace Monkeys
 {
     class MonkeyProgram
     {
