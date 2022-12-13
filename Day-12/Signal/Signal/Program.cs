@@ -1,6 +1,4 @@
-﻿
-
-namespace Signal
+﻿namespace Signal
 {
     class SignalProgram
     {
