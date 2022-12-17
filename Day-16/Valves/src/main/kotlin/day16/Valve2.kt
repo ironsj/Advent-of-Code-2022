@@ -18,12 +18,10 @@ class Valve2 {
         // mutable map where the key is the valve id and the value is a mutable map
         // where the keys are the neighbor ids and the values are 1
         val valvesMap = valves.associate { it.id to it.neighborIds.associateWith { 1 }.toMutableMap() }.toMutableMap()
-        println(valvesMap)
         // uses the floyd warshall algorithm to find the shortest paths
         // returns a mutable map with the key as the valve id and the value as a mutable map
         // with key as neighbor id and value as distance
         val shortestPaths = floydWarshall(valvesMap, idMap)
-        println(shortestPaths)
         getPressure(0, "AA", emptySet(), 0, shortestPaths, idMap)
         return finalPressure
     }
@@ -34,32 +32,41 @@ class Valve2 {
         visited: Set<String>,
         currentTime: Int,
         shortestPaths: MutableMap<String, MutableMap<String, Int>>,
-        idMap: Map<String, SingleValve>
+        idMap: Map<String, SingleValve>,
+        elephantTaught: Boolean = false
     ) {
         // set the final pressure equal to the max between it and the current pressure
         finalPressure = max(currentPressure, finalPressure)
+
         // goes through each neighbor, distance for a valve
         for ((valve, dist) in shortestPaths[currentValve]!!) {
             // if the neighbor hasn't been visited and we haven't gone over the time limit enter
             // time is checked with the current time +
             // the distance (since its one minute to visit) +
             // 1 (since that is how long it takes to open a valve)
-            if (!visited.contains(valve) && currentTime + dist + 1 < 30) {
+            if (!visited.contains(valve) && currentTime + dist + 1 < 26) {
                 // recursively call to visit other neighbors
                 // currentPressure is the time remaining * the flow rate of the neighbor + the current pressure
                 // valve is the neighbor we are currently visiting
                 // visited has the current neighbor added to it
-                // current time has the distance to the new point and 1 added to it
+                // current time is total time - current time - the distance (one minute to travel) - 1 for opening
                 // the maps stay the same
+                // when it is us recursively calling elephantTaught will be false, if its elephant then true
                 getPressure(
-                    currentPressure + (30 - currentTime - dist - 1) * idMap[valve]?.flowRate!!,
+                    currentPressure + (26 - currentTime - dist - 1) * idMap[valve]?.flowRate!!,
                     valve,
                     visited.union(listOf(valve)),
                     currentTime + dist + 1,
                     shortestPaths,
-                    idMap
+                    idMap,
+                    elephantTaught
                 )
             }
+        }
+        // human will enter this, elephant will not as it would cause it to multiply the elephants :)
+        if(!elephantTaught) {
+            // we have now taught the elephant, so they can start to open valves as well
+            getPressure(currentPressure, "AA", visited, 0, shortestPaths, idMap, true)
         }
     }
 

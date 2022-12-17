@@ -47,7 +47,7 @@ class Valve {
                 // currentPressure is the time remaining * the flow rate of the neighbor + the current pressure
                 // valve is the neighbor we are currently visiting
                 // visited has the current neighbor added to it
-                // current time has the distance to the new point and 1 added to it
+                // current time is total time - current time - the distance (one minute to travel) - 1 for opening
                 // the maps stay the same
                 getPressure(
                     currentPressure + (30 - currentTime - dist - 1) * idMap[valve]?.flowRate!!,
