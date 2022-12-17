@@ -19,9 +19,9 @@ class Valve2 {
         // mutable map where the key is the valve id and the value is a mutable map
         // where the keys are the neighbor ids and the values are 1
         val valvesMap =
-                valves
-                        .associate { it.id to it.neighborIds.associateWith { 1 }.toMutableMap() }
-                        .toMutableMap()
+            valves
+                .associate { it.id to it.neighborIds.associateWith { 1 }.toMutableMap() }
+                .toMutableMap()
         // uses the floyd warshall algorithm to find the shortest paths
         // returns a mutable map with the key as the valve id and the value as a mutable map
         // with key as neighbor id and value as distance
@@ -31,13 +31,13 @@ class Valve2 {
     }
 
     private fun getPressure(
-            currentPressure: Int,
-            currentValve: String,
-            visited: Set<String>,
-            currentTime: Int,
-            shortestPaths: MutableMap<String, MutableMap<String, Int>>,
-            idMap: Map<String, SingleValve>,
-            elephantTaught: Boolean = false
+        currentPressure: Int,
+        currentValve: String,
+        visited: Set<String>,
+        currentTime: Int,
+        shortestPaths: MutableMap<String, MutableMap<String, Int>>,
+        idMap: Map<String, SingleValve>,
+        elephantTaught: Boolean = false
     ) {
         // set the final pressure equal to the max between it and the current pressure
         finalPressure = max(currentPressure, finalPressure)
@@ -60,13 +60,13 @@ class Valve2 {
                 // when it is us recursively calling elephantTaught will be false, if its elephant
                 // then true
                 getPressure(
-                        currentPressure + (26 - currentTime - dist - 1) * idMap[valve]?.flowRate!!,
-                        valve,
-                        visited.union(listOf(valve)),
-                        currentTime + dist + 1,
-                        shortestPaths,
-                        idMap,
-                        elephantTaught
+                    currentPressure + (26 - currentTime - dist - 1) * idMap[valve]?.flowRate!!,
+                    valve,
+                    visited.union(listOf(valve)),
+                    currentTime + dist + 1,
+                    shortestPaths,
+                    idMap,
+                    elephantTaught
                 )
             }
         }
@@ -80,8 +80,8 @@ class Valve2 {
 
     // floyd warshall algorithm https://www.programiz.com/dsa/floyd-warshall-algorithm
     private fun floydWarshall(
-            shortestPaths: MutableMap<String, MutableMap<String, Int>>,
-            valves: Map<String, SingleValve>
+        shortestPaths: MutableMap<String, MutableMap<String, Int>>,
+        valves: Map<String, SingleValve>
     ): MutableMap<String, MutableMap<String, Int>> {
         // see link above for explanation
         for (k in shortestPaths.keys) {
@@ -100,9 +100,9 @@ class Valve2 {
         shortestPaths.values.forEach {
             // gets a list of each neighbor and replaces those with flow rate != 0 with ""
             it.keys
-                    .map { key -> if (valves[key]?.flowRate == 0) key else "" }
-                    // if the key is not "" remove it
-                    .forEach { toRemove -> if (toRemove != "") it.remove(toRemove) }
+                .map { key -> if (valves[key]?.flowRate == 0) key else "" }
+                // if the key is not "" remove it
+                .forEach { toRemove -> if (toRemove != "") it.remove(toRemove) }
         }
         return shortestPaths
     }
@@ -113,7 +113,7 @@ class Valve2 {
         companion object {
             fun from(line: String): SingleValve {
                 val (name, rate) =
-                        line.split("; ")[0].split(" ").let { it[1] to it[4].split("=")[1].toInt() }
+                    line.split("; ")[0].split(" ").let { it[1] to it[4].split("=")[1].toInt() }
                 val neighbors = line.split(", ").toMutableList()
                 neighbors[0] = neighbors[0].takeLast(2)
                 return SingleValve(name, rate, neighbors)
