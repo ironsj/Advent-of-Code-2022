@@ -15,10 +15,12 @@ class Falling {
     // set holding all the positions that are blocked (the floor and the rock positions)
     private val chamber = mutableSetOf<Position>()
 
-    public fun solve(): Int {
-        val answer = part1()
-        return answer
+    public fun solve(): Pair<Int, Long> {
+        val part1 = part1()
+        val part2 = part2()
+        return Pair(part1, part2)
     }
+
     private fun part1(): Int{
         // add the floor position
         for (i in 0..6){
@@ -33,6 +35,79 @@ class Falling {
 
         return height
     }
+
+    private fun part2(): Long{
+        // reset variables
+        height = 0
+        chamber.clear()
+        patternIndex = 0
+
+        // do the same as we did in part 1
+        for (i in 0..6){
+            chamber.add(Position(i, 0))
+        }
+
+        // a list that keeps track of the max height after each drop
+        val maxHeightHistory = mutableListOf(0)
+        for (i in 0 until 2022){
+            dropRock(Rock.values()[i % 5])
+            // add the current max after the rock has come to a rest
+            maxHeightHistory.add(height)
+        }
+
+        // a list containing the difference between each max height
+        // first it creates a list full of pairs of each adjacent element
+        // then it find the difference for each pair
+        val maxHeightDifferences = maxHeightHistory.zipWithNext().map { (a, b) -> b - a }
+
+        // We are now looking for a pattern in the difference of maximum heights
+        // If we find one, it can be applied to find the height after 1,000,000,000,000 rocks are dropped
+
+        // a value to start searching for the pattern
+        // do not know the best way to find this starting pattern, so it is trial and error
+        val patternStart = 225
+        // length of the sublist we will take from the height differences
+        val subListLength = 10
+        // 10 of the height differences in a list
+        // we are going to search for this sequence again
+        // this will indicate the pattern starting again
+        val subList = maxHeightDifferences.subList(patternStart, patternStart + subListLength)
+
+        // this will be equal to how much difference there is in height between when the pattern starts and ends
+        var patternHeight = 0
+        // this will equal how many rock are dropped from when the pattern starts to when the pattern ends
+        var patternLength = 0
+        // the height before the pattern began
+        val heightBeforePattern = maxHeightHistory[patternStart - 1]
+        // look for sequence in the rest of the list
+        for (i in patternStart + subListLength until maxHeightDifferences.size) {
+            // if our earlier sequence equals the new sublist of 10
+            if (subList == maxHeightDifferences.subList(i, i + subListLength)) {
+                // The sequence starts again at i. Therefore, the length of the pattern is i minus
+                // where we started the pattern
+                patternLength = i - patternStart
+                // The difference in height between the beginning of the sequence and the end
+                patternHeight = maxHeightHistory[i - 1] - heightBeforePattern
+                break
+            }
+        }
+
+        // number of rocks we are dropping
+        val numRocks = 1_000_000_000_000
+        // This is the number of times the pattern that can fit between the total number of rocks
+        // and when we started searching for the pattern
+        val numPatterns = (numRocks - patternStart) / patternLength
+        // The remainder of height for the last pattern
+        // This is because the last pattern may not fit fully
+        val offsetIntoLastPattern = ((numRocks - patternStart) % patternLength).toInt()
+        // the rest of the height in the pattern
+        val extraHeight = maxHeightHistory[patternStart + offsetIntoLastPattern] - heightBeforePattern
+        // the height when we started searching for the pattern plus
+        // the height for each full pattern together plus
+        // the leftover height at the end
+        return heightBeforePattern + (patternHeight * numPatterns) + extraHeight
+    }
+
     private fun dropRock(rock: Rock){
         // every rock drops two to the right of the left chamber wall
         var xPos = 2
