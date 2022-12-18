@@ -31,25 +31,26 @@ class Lava {
         val zBounds = points.minOf { it.z } - 1..points.maxOf { it.z } + 1
 
         // list of xyz coordinates we will visit
-        val toVisit = mutableListOf(Triple(xBounds.first, yBounds.first, zBounds.first))
+        val visitNext = mutableListOf(Triple(xBounds.first, yBounds.first, zBounds.first))
         // set of the xyz coordinates we have visited
         val visited = mutableSetOf<Triple>()
 
         // the sides that are exposed to the air
         var sides = 0
         // keep looping while the list of coordinates to visit is not empty
-        while (toVisit.isNotEmpty()) {
+        while (visitNext.isNotEmpty()) {
             // remove the first element from the list
-            val current = toVisit.removeFirst()
+            val current = visitNext.removeFirst()
             if (current !in visited) {
                 // for our current cube, get all the neighbors in our x,y,z range
                 // then if one of the neighbors is in the points add 1 to the sides
+                // (neighbor is in input and our current position is not so this is an open side)
                 // else add the neighbor to the next points to visit
                 current.neighbours()
                     .filter { it.x in xBounds && it.y in yBounds && it.z in zBounds }
-                    .forEach { neighbors -> if (neighbors in points) sides++ else toVisit += neighbors }
+                    .forEach { neighbor -> if (neighbor in points) sides++ else visitNext.add(neighbor) }
                 // add the current cube to our visited
-                visited += current
+                visited.add(current)
             }
         }
         return sides
