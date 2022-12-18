@@ -17,7 +17,7 @@ class Lava {
     }
 
     private fun part1(): Int {
-        // for each cube it counts the neighbors that aren't in the input (exposed sides for a cube)
+        // for each cube this counts the neighbors that aren't in the input (exposed sides for a cube)
         // then we find the sum of all exposed sides
         return points.sumOf { point -> point.neighbours().count { it !in points } }
     }
@@ -35,16 +35,20 @@ class Lava {
         // set of the xyz coordinates we have visited
         val visited = mutableSetOf<Triple>()
 
-        //
+        // the sides that are exposed to the air
         var sides = 0
         // keep looping while the list of coordinates to visit is not empty
         while (toVisit.isNotEmpty()) {
             // remove the first element from the list
             val current = toVisit.removeFirst()
             if (current !in visited) {
+                // for our current cube, get all the neighbors in our x,y,z range
+                // then if one of the neighbors is in the points add 1 to the sides
+                // else add the neighbor to the next points to visit
                 current.neighbours()
                     .filter { it.x in xBounds && it.y in yBounds && it.z in zBounds }
-                    .forEach { next -> if (next in points) sides++ else toVisit += next }
+                    .forEach { neighbors -> if (neighbors in points) sides++ else toVisit += neighbors }
+                // add the current cube to our visited
                 visited += current
             }
         }
