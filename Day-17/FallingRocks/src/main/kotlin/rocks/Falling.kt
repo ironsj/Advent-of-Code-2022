@@ -65,7 +65,8 @@ class Falling {
 
         // a value to start searching for the pattern
         // do not know the best way to find this starting pattern, so it is trial and error
-        val patternStart = 225
+        // 1,000,000,000,000 is divisible by 200 and less than our maxHeightHistory size so that is why it is chosen
+        val patternStart = 200
         // length of the sublist we will take from the height differences
         val subListLength = 10
         // 10 of the height differences in a list
