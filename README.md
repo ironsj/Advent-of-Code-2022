@@ -6,3 +6,4 @@ To challenge myself I have decided to use a different programming language every
 * **TypeScript** (6-10)
 * **C#** (11-15)
 * **Kotlin** (16-20)
+* **Rust**?? (21-25) <-- First time using Rust!
