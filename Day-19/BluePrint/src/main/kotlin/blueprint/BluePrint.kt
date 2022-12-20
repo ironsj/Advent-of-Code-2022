@@ -39,7 +39,7 @@ class BluePrint {
             val initialState = State(1, mutableListOf(0, 0, 0, 0), mutableListOf(1, 0, 0, 0))
             val bestScore = findMaxGeodes(it, initialState, 32)
             bestScore.toLong()
-        }.reduce{ a, b -> a * b }
+        }.reduce { a, b -> a * b }
         return result
     }
 
@@ -80,7 +80,7 @@ class BluePrint {
             val currentGeodes = state.resourceCount[3]
             // the number of geodes the current geode robots can get for the rest of the round
             val addedGeodesFromCurrentRobots: Int = state.robotCount[3] * (turnsRemaining + 1)
-
+            // the maximum number of geodes we could ideally get from robots made from this point forward
             val maxAddedGeodesFromFutureRobots: Int = maxScoreAdded[turnsRemaining]
             // if the current geodes + geodes from current robots + possible future geodes is less
             // than our best possible so far, return 0 (stop now if we can't do better than our current best)
@@ -103,7 +103,7 @@ class BluePrint {
             // keeps track of the best score in each state
             val resultList = mutableListOf<Int>()
 
-            // check if we have enough ore robots to get ore
+            // check if we have enough ore robots to get most costly resource
             if (state.robotCount[0] < maxOreRobotCost) {
                 // how many turns until we can get the ore robot
                 val oreTurns = turnsToWait(blueprint.oreRobotCost - state.resourceCount[0], state.robotCount[0])
