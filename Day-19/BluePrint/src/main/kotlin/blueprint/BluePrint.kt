@@ -47,9 +47,6 @@ class BluePrint {
     private fun findMaxGeodes(blueprint: SingleBluePrint, state: State, timeLimit: Int): Int {
         // holds the current best number of geodes
         var numGeodes = 0
-        // holds a history of our best number of geodes
-        val numGeodesHistory = mutableListOf<String>()
-        val stringLog = mutableListOf<String>()
 
         // finds the robot that requires the max number of ore
         val maxOreRobotCost = listOf(
@@ -99,8 +96,6 @@ class BluePrint {
                 if (score > numGeodes) {
                     // update number of geodes
                     numGeodes = score
-                    numGeodesHistory.clear()
-                    numGeodesHistory.addAll(stringLog)
                 }
                 return score
             }
@@ -125,10 +120,8 @@ class BluePrint {
                     val robots = state.robotCount.toMutableList()
                     robots[0]++
 
-                    stringLog.add("t${state.time + turns - 1} - Make Ore Robot")
                     // call findBest from new state and adds most geodes we can get from this state
                     resultList.add(findBest(State(state.time + turns, resources, robots)))
-                    stringLog.removeLast()
                 }
             }
 
@@ -153,10 +146,8 @@ class BluePrint {
                     val robots = state.robotCount.toMutableList()
                     robots[3]++
 
-                    stringLog.add("t${state.time + turns - 1} - Make Geode Robot")
                     // call findBest from new state and add the most geodes we can get from the state
                     resultList.add(findBest(State(state.time + turns, resources, robots)))
-                    stringLog.removeLast()
                 }
             }
 
@@ -181,10 +172,8 @@ class BluePrint {
                     val robots = state.robotCount.toMutableList()
                     robots[2]++
 
-                    stringLog.add("t${state.time + turns - 1} - Make Obsidian Robot")
                     // call findBest from new state and add the most geodes we can get from the state
                     resultList.add(findBest(State(state.time + turns, resources, robots)))
-                    stringLog.removeLast()
                 }
             }
 
@@ -204,10 +193,8 @@ class BluePrint {
                     val robots = state.robotCount.toMutableList()
                     robots[1]++
 
-                    stringLog.add("t${state.time + turns - 1} - Make Clay Robot")
                     // call findBest from new state and add the most geodes we can get from the state
                     resultList.add(findBest(State(state.time + turns, resources, robots)))
-                    stringLog.removeLast()
                 }
             }
 
@@ -223,10 +210,6 @@ class BluePrint {
             // if our result for this branch is better than the current best
             if (result == waitScore && waitScore > numGeodes) {
                 numGeodes = result
-                stringLog.add("t${state.time} - Wait $waitRounds")
-                numGeodesHistory.clear()
-                numGeodesHistory.addAll(stringLog)
-                stringLog.removeLast()
             }
 
             return result
