@@ -204,6 +204,10 @@ fn wrap2(pos: &Coord, dir: &Direction) -> (Coord, Direction) {
     // get our index within the current cube
     let (row_index, column_index) = (pos.row % 50, pos.col % 50);
 
+    // i is used to calculate the new rows and columns
+    // you can see the pattern for how i is used in the match statements below
+    // it is best to draw out the map and see how the rows and columns change
+    // Shoutout to u/0xu- on Reddit for creating this diagram: https://imgur.com/LyJ11iD
     let i = match dir {
         Direction::L => 49 - row_index,
         Direction::R => row_index,
@@ -213,7 +217,9 @@ fn wrap2(pos: &Coord, dir: &Direction) -> (Coord, Direction) {
 
     // find the row index in the new cube
     let new_row = match new_dir {
+        // if coming from left: row size, right: 49 - row size, up: 49 - column size, down: column size
         Direction::L => 49 - i,
+        // if coming from left: 49 - row size, right: row size, up: column size, down: 49 - column size
         Direction::R => i,
         // if you enter a cube going up, you are in row 49
         Direction::U => 49,
@@ -226,7 +232,9 @@ fn wrap2(pos: &Coord, dir: &Direction) -> (Coord, Direction) {
         Direction::L => 49,
         // if you enter a cube going right, you are in column 0
         Direction::R => 0,
+        // if coming from left: 49 - row size, right: row size, up: column size, down: 49 - column size
         Direction::U => i,
+        // if coming from left: row size, right: 49 - row size, up: 49 - column size, down: column size
         Direction::D => 49 - i,
     };
 
