@@ -54,6 +54,11 @@ impl Coord {
             },
         }
     }
+
+    // get the Manhattan distance between two coordinates
+    fn manhattan(&self, other: Coord) -> usize {
+        other.col.abs_diff(self.col) + other.row.abs_diff(self.row)
+    }
 }
 
 // enum that identifies the type of tile
@@ -76,6 +81,7 @@ enum Direction {
 #[derive(PartialEq, Eq)]
 struct Node {
     cost: usize,
+    heuristic: usize,
     pos: Coord,
 }
 
@@ -83,7 +89,9 @@ struct Node {
 impl Ord for Node {
     // the ordering of nodes is based on the cost
     fn cmp(&self, other: &Self) -> Ordering {
-        other.cost.cmp(&self.cost)
+        let self_total = self.cost + self.heuristic;
+        let other_total = other.cost + other.heuristic;
+        other_total.cmp(&self_total)
     }
 }
 
@@ -92,6 +100,15 @@ impl PartialOrd for Node {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
+}
+
+// struct that holds the map information
+struct MapInfo {
+    rows: usize,
+    cols: usize,
+    walls: HashSet<Coord>,
+    blizzard_maps: HashMap<usize, HashSet<Coord>>,
+    repeats_at: usize,
 }
 
 fn parse(input: &str) -> (HashMap<Coord, Tile>, usize, usize) {
@@ -225,7 +242,67 @@ fn blizzard_maps(
     cache
 }
 
-// uses Dijkstra's algorithm to find the shortest path from the start to the end
+fn shortest(from: Coord, to: Coord, start_time: usize, map_info: &MapInfo) -> usize {
+    // destructure the map info
+    let MapInfo {
+        rows,
+        cols,
+        walls,
+        blizzard_maps,
+        repeats_at,
+    } = map_info;
+
+    // a priority queue that holds the nodes to visit ordered by total cost
+    let mut pq = BinaryHeap::new();
+    // keep track of our visited coordinates and at what time we visited them (backtracking is allowed)
+    let mut seen = HashSet::new();
+
+    // add the start node to the priority
+    pq.push(Node {
+        cost: start_time,
+        heuristic: from.manhattan(to),
+        pos: from,
+    });
+    // add the start node to the seen set at the starting time
+    seen.insert((from, start_time));
+
+    // keep looping until the priority queue is empty
+    while let Some(Node { cost, pos, .. }) = pq.pop() {
+        // if we find a node that is at the end coordinate, return the cost as it is our shortest path
+        if pos == to {
+            return cost;
+        }
+
+        // the cost of the next node is the current cost plus 1
+        let new_cost = cost + 1;
+        // get the coordinates of the blizzards at the new cost modulo the lcm (since the blizzards repeat)
+        let blizzards = &blizzard_maps[&(new_cost % repeats_at)];
+
+        let candidates = pos
+            .neighbors(*rows, *cols)
+            // add all neighbors into an iterator (since we can choose to move to these)
+            .into_iter()
+            // add the current node into the iterator (since we can choose not to move)
+            .chain(iter::once(pos))
+            // filter out any neighbors that are walls or blizzards
+            .filter(|coord| !walls.contains(coord))
+            .filter(|coord| !blizzards.contains(coord));
+
+        // iterate over all possible candidates to move to (including not moving)
+        for new_pos in candidates {
+            // push to the priority queue if we haven't seen this coordinate at this time
+            if seen.insert((new_pos, new_cost)) {
+                pq.push(Node {
+                    cost: new_cost,
+                    heuristic: new_pos.manhattan(to),
+                    pos: new_pos,
+                });
+            }
+        }
+    }
+    usize::MAX
+}
+
 fn part_1(input: &str) -> usize {
     // parse the input into a HashMap of coordinates and tiles
     let (map, rows, cols) = parse(input);
@@ -252,59 +329,59 @@ fn part_1(input: &str) -> usize {
         col: cols - 2,
     };
 
-    // a priority queue that holds the nodes visited in order of their cost (least cost first)
-    let mut pq = BinaryHeap::new();
-    // keep track of our visited coordinates and at what time we visited them (backtracking is allowed)
-    let mut seen = HashSet::new();
+    // a struct that holds the information about the map
+    let map_info = MapInfo {
+        rows,
+        cols,
+        repeats_at: lcm,
+        walls,
+        blizzard_maps,
+    };
 
-    // add the start node to the priority queue
-    pq.push(Node {
-        cost: 0,
-        pos: start,
-    });
-    // add the start node to the seen set at time 0
-    seen.insert((start, 0));
-
-    // keep looping until the priority queue is empty
-    while let Some(Node { cost, pos }) = pq.pop() {
-        // if we find a node that is at the end coordinate, return the cost as it is our shortest path
-        if pos == end {
-            return cost;
-        }
-
-        // the cost of the next node is the current cost plus 1
-        let new_cost = cost + 1;
-        // get the coordinates of the blizzards at the new cost modulo the lcm (since the blizzards repeat)
-        let blizzards = &blizzard_maps[&(new_cost % lcm)];
-
-        // get all of the neighbors of the current node
-        let candidates = pos
-            .neighbors(rows, cols)
-            // add all neighbors into an iterator (since we can choose to move to these)
-            .into_iter()
-            // add the current node into the iterator (since we can choose not to move)
-            .chain(iter::once(pos))
-            // filter out any neighbors that are walls or blizzards
-            .filter(|coord| !walls.contains(coord))
-            .filter(|coord| !blizzards.contains(coord));
-
-        // iterate over all possible candidates to move to (including not moving)
-        for new_pos in candidates {
-            // push to the priority queue if we haven't seen this coordinate at this time
-            if seen.insert((new_pos, new_cost)) {
-                pq.push(Node {
-                    cost: new_cost,
-                    pos: new_pos,
-                });
-            }
-        }
-    }
-
-    usize::MAX
+    // find the shortest path from the start to the end
+    shortest(start, end, 0, &map_info)
 }
 
 fn part_2(input: &str) -> usize {
-    return 2;
+    // parse the input into a HashMap of coordinates and tiles
+    let (map, rows, cols) = parse(input);
+
+    // get the coordinates of the walls
+    let walls: HashSet<Coord> = map
+        .iter()
+        .filter(|(_, tile)| **tile == Tile::Wall)
+        .map(|(pos, _)| *pos)
+        .collect();
+
+    // since the blizzards wrap around the map when they reach a wall
+    // the horizontal blizzards repeat every cols - 2 steps and the vertical blizzards repeat every rows - 2 steps
+    // therefore, the blizzards coordinates all repeat every lcm(row-2, col-2) steps
+    let lcm = lcm(rows - 2, cols - 2);
+    // get the coordinates of the blizzards at each time before they all repeat
+    let blizzard_maps = blizzard_maps(&map, rows, cols, lcm);
+    // the coordinate where we start
+    let start = Coord { row: 0, col: 1 };
+    // the coordinate where we end
+    let end = Coord {
+        row: rows - 1,
+        col: cols - 2,
+    };
+
+    // a struct that holds the information about the map
+    let map_info = MapInfo {
+        rows,
+        cols,
+        repeats_at: lcm,
+        walls,
+        blizzard_maps,
+    };
+
+    // find the shortest path from the start to the end
+    let there = shortest(start, end, 0, &map_info);
+    // find the shortest path from the end to the start
+    let back = shortest(end, start, there, &map_info);
+    // find the shortest path from the start to the end again
+    shortest(start, end, back, &map_info)
 }
 
 fn main() {
