@@ -49,6 +49,32 @@ fn to_snafu(decimal: i64) -> String {
 
     // return the snafu string
     snafu
+
+    /*
+    Example:
+    decimal: 39
+    decimal_remainder: 4
+    snafu_digit: '-'
+    new_decimal: 8
+
+
+    decimal: 8
+    decimal_remainder: 3
+    snafu_digit: '='
+    new_decimal: 2
+
+    decimal: 2
+    decimal_remainder: 2
+    snafu_digit: '2'
+    new_decimal: 0
+
+    decimal: 0
+    we hit the base case!
+
+    '2' + '=' + '-' = '1=-'
+    (2 * 25) + (-2 * 5 ) + (-1 * 1) = 39
+
+    */
 }
 
 fn part_1(input: &str) -> String {
